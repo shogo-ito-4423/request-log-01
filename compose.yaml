@@ -1,0 +1,20 @@
+services:
+  api:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "127.0.0.1:${PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: sqlite:////data/issues.db
+    volumes:
+      - issue-data:/data
+  test:
+    profiles: [test]
+    build:
+      context: .
+      target: test
+    tmpfs:
+      - /tmp
+volumes:
+  issue-data:

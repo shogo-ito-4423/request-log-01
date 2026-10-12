@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build test container
+        run: docker compose --profile test build test
+      - name: Ruff and pytest
+        run: docker compose --profile test run --rm test
+      - name: Start API
+        run: docker compose up --build --detach --wait api
+      - name: Exercise API and save a record
+        run: >-
+          docker compose exec -T api python - create
+          --base-url http://127.0.0.1:8000 --state /data/smoke-state.json
+          < scripts/smoke.py
+      - name: Recreate API container and check persisted data
+        run: |
+          docker compose up --detach --force-recreate --wait api
+          docker compose exec -T api python - verify --base-url http://127.0.0.1:8000 --state /data/smoke-state.json < scripts/smoke.py
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+      - name: Clean up CI containers and disposable data
+        if: always()
+        run: docker compose --profile test down --volumes

@@ -40,5 +40,11 @@ GitHub ActionsのCI履歴は以下で確認する。
 
 - [Actions](https://github.com/shogo-ito-4423/request-log-01/actions/workflows/ci.yml)
 - [実装Issue #1](https://github.com/shogo-ito-4423/request-log-01/issues/1)
+- [実装PR #2](https://github.com/shogo-ito-4423/request-log-01/pull/2)
+- [初回push CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/38213464306)
+- [初回PR CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/38213473981)
+
+初回CIでcheckout v4のNode.js 20非推奨とubuntu-latest切り替え予告を検出。
+checkout v6をコミットSHAで固定し、Runnerをubuntu-24.04へ固定して再検証する。
 
 GitHub上の実行結果とPR・マージ履歴を一次記録とする。

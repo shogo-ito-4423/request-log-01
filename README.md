@@ -1,7 +1,12 @@
 # Request Log — 業務改善リクエスト管理API
 
+[![CI](https://github.com/shogo-ito-4423/request-log-01/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shogo-ito-4423/request-log-01/actions/workflows/ci.yml)
+
 業務で見つけた改善要望を登録し、担当者・優先度・進捗を管理するREST APIです。
 2026年10月12日の1日版MVPとして、要件整理 → API実装 → DB保存 → 自動テスト → CIまでを対象にしています。
+
+開発履歴: [Issue #1](https://github.com/shogo-ito-4423/request-log-01/issues/1) →
+`feat/1-minimal-api-ci` → [PR #2](https://github.com/shogo-ito-4423/request-log-01/pull/2)。
 
 ## 最短で試す
 

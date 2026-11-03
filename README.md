@@ -32,7 +32,7 @@ docker compose up --build --detach --wait api
 |---|---|---|---|
 | GET | `/health` | 200 | DB疎通確認（失敗時503） |
 | POST | `/issues` | 201 | 改善要望を登録。Locationヘッダーに詳細URLを返す |
-| GET | `/issues?limit=50&offset=0` | 200 | ID昇順の一覧（最大100件） |
+| GET | `/issues?limit=50&offset=0` | 200 | ID昇順の一覧（最大100件）。任意の `status` で絞り込み可能 |
 | GET | `/issues/{id}` | 200 | 詳細を取得 |
 | PATCH | `/issues/{id}` | 200 | 指定したフィールドだけ更新 |
 
@@ -64,6 +64,8 @@ curl -i -X POST http://localhost:8000/issues \
   -d '{"title":"月次集計の転記を自動化したい","description":"毎月の手作業を減らす","priority":"high"}'
 
 curl http://localhost:8000/issues
+# 対応中の要望だけをID昇順に並べ、先頭を1件飛ばして次の1件を取得
+curl 'http://localhost:8000/issues?status=in_progress&offset=1&limit=1'
 curl http://localhost:8000/issues/1
 
 curl -X PATCH http://localhost:8000/issues/1 \
@@ -121,7 +123,8 @@ flowchart LR
 - Docker: 実行・テスト・依存関係の解決をコンテナ内に統一。非rootユーザーでAPIを実行。
 - ロックファイル: 推移的依存関係もバージョンとハッシュを固定。
 
-認証、検索、削除、PostgreSQL、Alembic、クラウドデプロイは後続版の対象です。
+一覧で状態を省略すると全状態が対象です。有効な状態で該当する要望がなければ200と空配列、未定義の状態なら422を返します。
+認証、キーワード検索、削除、PostgreSQL、Alembic、クラウドデプロイは後続版の対象です。
 この版はローカルデモ用で、Composeでは127.0.0.1にのみポートを公開します。
 初期テーブルは起動時に作成しますが、既存テーブルのスキーマ変更には対応しません。
 SQLiteの同時書き込み性能と単一プロセス構成を前提としています。

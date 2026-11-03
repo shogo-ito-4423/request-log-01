@@ -128,6 +128,29 @@ def test_pagination_has_stable_order(client):
     assert client.get("/issues?offset=99").json() == []
 
 
+def test_pagination_filter_by_status(client):
+    id1 = client.post("/issues", json={"title": "1", "status": "open"}).json()["id"]
+    id2 = client.post("/issues", json={"title": "2", "status": "in_progress"}).json()["id"]
+    id3 = client.post("/issues", json={"title": "3", "status": "done"}).json()["id"]
+    id4 = client.post("/issues", json={"title": "4", "status": "in_progress"}).json()["id"]
+    ids = [id1, id2, id3, id4]
+    response = client.get("/issues?status=in_progress&offset=1&limit=1")
+    assert response.status_code == 200
+    assert [row["id"] for row in response.json()] == [ids[3]]
+    assert client.get("/issues?offset=99").json() == []
+
+
+def test_status_filter_no_matches(client):
+    assert client.post("/issues", json={"title": "未対応の要望"}).status_code == 201
+    response = client.get("/issues?status=done")
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_invalid_status_filter(client):
+    assert client.get("/issues?status=closed").status_code == 422
+
+
 @pytest.mark.parametrize("query", ["limit=0", "limit=101", "offset=-1", "limit=abc"])
 def test_invalid_pagination(client, query):
     assert client.get(f"/issues?{query}").status_code == 422

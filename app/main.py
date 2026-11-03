@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.database import get_session, make_engine
-from app.models import Base, Issue
+from app.models import Base, Issue, Status
 from app.schemas import IssueCreate, IssueRead, IssueUpdate
 
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -53,10 +53,14 @@ def create_app(database_url: str | None = None) -> FastAPI:
     @application.get("/issues", response_model=list[IssueRead], tags=["issues"])
     def list_issues(
         session: SessionDep,
+        status: Status | None = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
         offset: Annotated[int, Query(ge=0)] = 0,
     ) -> list[Issue]:
-        return list(session.scalars(select(Issue).order_by(Issue.id).offset(offset).limit(limit)))
+        stmt = select(Issue).order_by(Issue.id).offset(offset).limit(limit)
+        if status is not None:
+            stmt = stmt.where(Issue.status == status)
+        return list(session.scalars(stmt))
 
     def find_issue(issue_id: int, session: Session) -> Issue:
         issue = session.get(Issue, issue_id)

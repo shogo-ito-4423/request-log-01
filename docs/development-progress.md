@@ -6,7 +6,7 @@
 
 | 段階・当初期限 | 完成と判断する条件 | 11/3時点の実績・差分 |
 |---|---|---|
-| M1 最小API・10/12 | GitHubにリポジトリとIssue対応コミットがあり、DockerでFastAPIが起動。登録・一覧・詳細、SQLite保存、pytest、push/PRのCI、第三者向け起動手順を確認する。 | **技術条件達成（期限当日）**。[Issue #1](https://github.com/shogo-ito-4423/request-log-01/issues/1) → [PR #2](https://github.com/shogo-ito-4423/request-log-01/pull/2) → [main CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/38213677891)。48テストと再作成後の永続化を検証。初日の見積もり4〜6時間、実績時間不明。MVP全体の面接練習は未記録。 |
+| M1 最小API・10/12 | GitHubにリポジトリとIssue対応コミットがあり、DockerでFastAPIが起動。登録・一覧・詳細、SQLite保存、pytest、push/PRのCI、第三者向け起動手順を確認する。 | **技術条件達成（期限当日）**。[Issue #1](https://github.com/shogo-ito-4423/request-log-01/issues/1) → [PR #2](https://github.com/shogo-ito-4423/request-log-01/pull/2) → [main CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/38213677891)。48テストと再作成後の永続化を検証。初日の見積もり4〜6時間、実績時間不明。11/3に永続化とCIランナーの選択について[振り返りを実施](daily-learning-log.md)。 |
 | M2 バックエンド・10/18 | CRUD、PostgreSQL、SQLAlchemy、Alembic、Compose起動、単体・実DB統合テスト、Actionsでのテスト・Lint、README・設計資料、Issue→PR→コミットの履歴がそろう。 | **進行中・16日超過**。作成・取得・更新、状態検索、SQLAlchemy、SQLite統合テスト、Ruff、CIと文書あり。削除、PostgreSQL、移行、独立した単体テストとPostgreSQLでの検証が残る。 |
 | M3 クラウドCD・10/25 | 認証・認可と秘密管理を備えたコンテナAPIをクラウドに公開し、CI成功時だけCD。ヘルスチェック、失敗対応、実変更の再デプロイ履歴、CI/CDの図と説明を確認する。 | **未達・9日超過**。`/health` とCIは稼働実績あり。クラウド上の動作・アクセス制御・再デプロイ・復旧は未検証。M2のDB移行と公開先の選定・承認が先。 |
 | M4 AWS運用・11/08 | 小規模なAWS構成をTerraformで管理し、DockerをActionsからデプロイ。IAM・費用・セキュリティ、ログ収集・CloudWatch監視、障害検証・ロールバック、構成図・技術選定理由・最終README・運用手順を確認する。 | **未着手・残り5日**。AWS/Terraformの実装・稼働の証跡なし。残り日数と依存作業を考えると当初期限での全条件達成は困難。 |

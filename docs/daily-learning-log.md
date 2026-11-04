@@ -41,7 +41,7 @@
 
 ## 2026-11-04：B1 接続引数をDB種別で分離
 
-- 対象はM2のB1。対象は[GitHub Issue #8](https://github.com/shogo-ito-4423/request-log-01/issues/8)。コミットは未作成。
+- 対象はM2のB1。対象は[GitHub Issue #8](https://github.com/shogo-ito-4423/request-log-01/issues/8)。実装コミットは `a523e40`。PR #9でレビュー。
 - SQLAlchemyのURL解析でSQLiteを判定し、専用の接続引数を渡す処理を分岐した。PostgreSQL移行の準備として実施。
 - pytestのパラメータ化と `unittest.mock.patch` で4ケースを追加。実装前はPostgreSQLの2ケースが失敗、修正後は全55テスト・Ruff成功、カバレッジ100%。既存Dockerイメージ内で検証。
 - 本人の回答では、SQLiteには既存の引数、PostgreSQLには引数なしを期待。モックを使うことで「DBの状態に関わらずmake_engine単体の動作の正しさを検証できる」と説明した。

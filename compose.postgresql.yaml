@@ -1,0 +1,40 @@
+name: request-log-01-postgresql
+
+services:
+  api:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "127.0.0.1:${PORT:-18082}:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://request_log:local_demo_only@db:5432/request_log
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - smoke-state:/data
+  db:
+    image: postgres:15@sha256:3e43515057e113ee741fca2f621f15300be34a6d4a8dfcf2e20651288c8272f3
+    environment:
+      POSTGRES_USER: request_log
+      POSTGRES_PASSWORD: local_demo_only
+      POSTGRES_DB: request_log
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U request_log -d request_log"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  test:
+    profiles: [test]
+    build:
+      context: .
+      target: test
+    tmpfs:
+      - /tmp
+
+volumes:
+  postgres-data:
+  smoke-state:

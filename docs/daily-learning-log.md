@@ -114,3 +114,7 @@
 **Codexの補足：** 分離したのはAPI起動とDDL実行であり、モデル定義はアプリにも残る。create_allは既存テーブルへモデルの変更を反映しない。Alembicは変更手順と適用履歴を管理する。downgradeは今回issuesテーブルをデータごと削除し、データ復旧ではない。ツールの利用だけでは変更の正しさは保証されず、構造・制約・API動作を検証する必要がある。
 
 **次回への引き継ぎ：** 振り返りは完了。モデル変更と実DBへの反映の違いを短く復習する。downgradeとデータ復旧の違い、Python側defaultとDB側DEFAULTの理解は今回個別には確認していない。本記録は利用者のコミット承認を得て反映。残作業は外部起票・Push・PR・CI・マージ。次の実装候補はB4。
+
+### B3のマージ結果
+
+利用者のマージ依頼により[Issue #14](https://github.com/shogo-ito-4423/request-log-01/issues/14)を起票し、[PR #15](https://github.com/shogo-ito-4423/request-log-01/pull/15)をCI成功後にマージ（`83886a0`）。IssueはClosed。実装 `ea4b9f1`、振り返り記録 `f6af459`。上記の外部起票・Push・PR・CI・マージの残作業は解消し、B3は完了。次の実装候補はB4、復習候補とA・B・C評価は前節のとおり。

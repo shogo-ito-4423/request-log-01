@@ -1,6 +1,6 @@
 # B3：AlembicでDBスキーマの変更履歴を管理する
 
-対象マイルストーンはM2。想定60〜90分。2026-11-05に利用者が選択。GitHub未起票。
+対象マイルストーンはM2。想定60〜90分。2026-11-05に利用者が選択。[GitHub Issue #14](https://github.com/shogo-ito-4423/request-log-01/issues/14)。
 
 ## 背景・解決する問題
 

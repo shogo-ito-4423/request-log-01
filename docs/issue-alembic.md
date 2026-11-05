@@ -42,3 +42,7 @@ Issue文案を準備。設計対話・実装・検証は未実施。外部起票
 - 既存SQLite・B2のデータは変更せず、今回のdowngradeは専用DBだけで実施。
 - 検証用コンテナ・ネットワークは停止・削除済み。`request-log-01-b3-check_postgres-data` と `request-log-01-b3-check_smoke-state` は保持。
 - GitHub未起票、未コミット。変更後のGitHub CI・PR・マージは未実施。PostgreSQL全CRUDのCI組込みはB5に残る。見積もり60〜90分、実績時間未計測。
+
+## コミット後の状態（2026-11-05）
+
+利用者の承認後、`codex/b3-alembic` に `ea4b9f1` として実装をコミット済み。振り返りも完了し、Aは○、Bは○（補足・追加質問後）、Cは○（検証の必要性を補足）。詳細は学習記録を参照。外部起票・Push・PR・変更後のGitHub CI・マージは未実施。本追記も利用者のコミット承認を得て反映。

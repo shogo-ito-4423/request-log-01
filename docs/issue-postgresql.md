@@ -43,3 +43,7 @@ PostgreSQL、Docker Compose、SQLAlchemy、DBドライバ、接続URL、名前�
 - 検証用コンテナ・ネットワークは `down` で削除。`request-log-01-b2-check_postgres-data` と `request-log-01-b2-check_smoke-state` は保持。
 - ローカルの実装・動作検証は完了。実績時間は未計測。
 - 利用者からマージまでの依頼を受け、Issue #11を起票。`codex/b2-postgresql` からPR・CI確認・マージへ進む。最終状態は進捗台帳に記録する。
+
+## マージ結果
+
+実装コミット `b9b4334`、[PR #12](https://github.com/shogo-ito-4423/request-log-01/pull/12)。[CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42005946712)を確認後、`4957fcc` でmainへマージ済み。Issue #11はClosed。B2の技術条件は達成、コミット後の理解度確認も11/5に完了（詳細は学習記録）。マージ結果と理解度確認の結果を本記録に反映した。

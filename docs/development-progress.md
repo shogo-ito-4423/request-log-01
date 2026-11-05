@@ -73,3 +73,11 @@ M2は18日超過、M3は11日超過、M4は残り3日。当初期限は保持。
 ローカル実装・検証完了、未コミット。外部起票・CI・PR・マージは未実施（外部起票とコミット等は別途承認が必要）。見積もり60〜90分、実績時間は未計測のため差は不明。検証用コンテナは停止・削除済み、専用ボリューム2個は保持。次は差分レビュー・承認とコミット後の理解度確認、その後B3（Alembic）。PostgreSQLの全CRUDテストとCI組込みはB5に残る。
 
 利用者から「マージしてB2を完了」の依頼を受け、起票・コミット・push・PR・CI確認・マージまで進める。[B2はIssue #11](https://github.com/shogo-ito-4423/request-log-01/issues/11)に対応付けた。作業ブランチは `codex/b2-postgresql`。コミット後のA・B・C評価は回答を待って実施する。
+
+### B2マージ完了（2026-11-05）
+
+[Issue #11](https://github.com/shogo-ito-4423/request-log-01/issues/11)はClosed。[PR #12](https://github.com/shogo-ito-4423/request-log-01/pull/12)をマージし、ローカルmainも同期した。実装 `b9b4334`、マージ `4957fcc`。[PR CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42005946712)、[push CI成功](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42005903178)を確認してからマージした。
+
+B2の技術的な完了条件は達成。クラウドデプロイは対象外・未実施。コミット後の振り返りも11/5に完了し、A・Bは○（補足・追加質問後）、Cは○（検証範囲について補足）。本人の回答とCodexの補足は学習記録に分けて記載した。次の実装課題はB3。復習候補はSessionとドライバの役割、単体・実接続テストの検証範囲。マージ後の本記録に振り返り回答を反映した。
+
+マージ後の[main CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42006092061)も `4957fcc` で成功した。

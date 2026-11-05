@@ -16,7 +16,9 @@ Pythonやライブラリをホストにインストールする必要はあり�
 ```sh
 git clone https://github.com/shogo-ito-4423/request-log-01.git
 cd request-log-01
-docker compose up --build --detach --wait api
+docker compose build api
+docker compose run --rm --no-deps api alembic upgrade head
+docker compose up --detach --wait api
 ```
 
 - API操作画面（Swagger UI）: <http://localhost:8000/docs>
@@ -25,6 +27,10 @@ docker compose up --build --detach --wait api
 
 8000番が使用中の場合は `PORT=18000 docker compose up --build --detach --wait api` を実行し、URLのポートを18000に変更します。
 初回ビルドはDocker HubとPyPIへの接続が必要です。Swagger UIも外部CDNを利用します。
+
+上記は空のDB向けです。以前の版で作成したDBには、そのままupgradeせず
+[既存DBの扱い](docs/development.md#既存dbの扱い)を確認してください。
+APIはテーブルを自動作成しません。スキーマはAlembicで管理します。
 
 ## API仕様
 

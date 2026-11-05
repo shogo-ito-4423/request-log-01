@@ -20,7 +20,10 @@ jobs:
       - name: Ruff and pytest
         run: docker compose --profile test run --rm test
       - name: Start API
-        run: docker compose up --build --detach --wait api
+        run: |
+          docker compose build api
+          docker compose run --rm --no-deps api alembic upgrade head
+          docker compose up --detach --wait api
       - name: Exercise API and save a record
         run: >-
           docker compose exec -T api python - create

@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.database import get_session, make_engine
-from app.models import Base, Issue, Status
+from app.models import Issue, Status
 from app.schemas import IssueCreate, IssueRead, IssueUpdate
 
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -21,7 +21,6 @@ def create_app(database_url: str | None = None) -> FastAPI:
         engine = make_engine(database_url or os.getenv("DATABASE_URL", "sqlite:////data/issues.db"))
         application.state.engine = engine
         try:
-            Base.metadata.create_all(engine)
             yield
         finally:
             engine.dispose()

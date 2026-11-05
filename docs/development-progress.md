@@ -108,3 +108,9 @@ M2は18日超過、M3は11日超過、M4は残り3日。当初期限を保持し
 ローカル実装・検証・実装コミット・振り返りまで完了。外部起票・Push・PR・変更後のGitHub CI・マージは未実施。今回追記した振り返り記録は利用者のコミット承認を得て反映。B3のマージ完了とは扱わず、次の実装候補はB4。日程と見積もりは前節のまま。
 
 利用者からB3のマージ・完了を依頼され、[Issue #14](https://github.com/shogo-ito-4423/request-log-01/issues/14)を作成。B3を#14に対応付け、実装 `ea4b9f1` と振り返り `f6af459` を含む `codex/b3-alembic` をPush済み。PR・CI確認・マージへ進む。
+
+### B3マージ完了（2026-11-05）
+
+[PR #15](https://github.com/shogo-ito-4423/request-log-01/pull/15)を `83886a0` でmainへマージし、[Issue #14](https://github.com/shogo-ito-4423/request-log-01/issues/14)を完了にした。最新PRコミット `24ca272` の[PR CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42048039983)と[Push CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42048029880)の成功を確認してからマージ。ローカルmainも同期した。
+
+B3のローカル検証・CI・マージ・振り返りは完了。初期revision、空DBでの往復検証、既存データ保持・移行方針の文書化という完了条件を達成。既存DBの実移送・stampとクラウドデプロイは対象外・未実施。M2全体は未完了で、次はB4（削除API）、その後B5（PostgreSQL全CRUD・マイグレーションのCI組込み）。実績時間は未計測、当初期限は保持する。

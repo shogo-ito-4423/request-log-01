@@ -48,3 +48,38 @@ docker compose exec -T api python - verify --base-url http://127.0.0.1:8000 --st
 公開先: `shogo-ito-4423/request-log-01`。
 GitHub操作にはそのリポジトリへ書き込める認証が必要。
 CIの成功はGitHub Actionsの実際の実行結果で確認する。
+
+## PostgreSQLでのローカル検証（B2）
+
+`compose.postgresql.yaml` は独立した構成です。プロジェクト名は
+`request-log-01-postgresql`、APIは `http://localhost:18082` に公開します。
+ポート競合時は `PORT=18083` などを各コマンドに指定してください。
+DBはホストにポート公開せず、APIからサービス名 `db` で接続します。
+`psycopg[binary]` をコンテナ内に導入し、SQLAlchemyの
+`postgresql+psycopg` URLで選択します。DBのhealthcheck成功後にAPIを起動します。
+
+固定のユーザー・パスワードはローカルデモ専用です。公開環境には使用しません。
+DBは専用の `postgres-data`、検証用の比較データは `smoke-state` 名前付きボリュームへ
+保存します。SQLite用のボリュームとは別であり、既存データの自動移行は行いません。
+テーブル作成は既存の `create_all` を使用し、スキーマ変更履歴の管理はB3で導入します。
+
+以下はデモ用レコードを作成します。イメージ未取得時は取得の承認を得てから進めます。
+
+```sh
+docker compose -f compose.postgresql.yaml build api test
+docker compose -f compose.postgresql.yaml up --pull never --detach --wait api
+# 登録・更新後、IDと全フィールドを照合
+docker compose -f compose.postgresql.yaml exec -T api python - create --base-url http://127.0.0.1:8000 --state /data/smoke-state.json < scripts/smoke.py
+docker compose -f compose.postgresql.yaml exec -T api python - verify --base-url http://127.0.0.1:8000 --state /data/smoke-state.json < scripts/smoke.py
+# APIとDBの両方を再作成。ボリュームは保持
+docker compose -f compose.postgresql.yaml up --pull never --detach --force-recreate --wait db api
+docker compose -f compose.postgresql.yaml exec -T api python - verify --base-url http://127.0.0.1:8000 --state /data/smoke-state.json < scripts/smoke.py
+# 既存のSQLiteテストと接続設定の単体テスト、Ruff
+docker compose -f compose.postgresql.yaml --profile test run --rm test
+# 終了。名前付きボリュームとデータは保持
+docker compose -f compose.postgresql.yaml --profile test down
+```
+
+既存スモークスクリプトは一覧の先頭100件にも登録レコードが含まれることを確認します。
+この手順は専用の少量データ環境向けです。100件を超える環境への対応は別課題です。
+PostgreSQLの全CRUD統合テストとCIへの組込みはB5で行います。

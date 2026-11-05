@@ -10,6 +10,8 @@ RUN pip install --require-hashes -r requirements.lock \
     && useradd --uid 10001 --gid app --no-create-home app \
     && mkdir /data && chown app:app /data
 COPY app ./app
+COPY alembic.ini ./
+COPY migrations ./migrations
 
 FROM base AS test
 COPY requirements-dev.lock ./

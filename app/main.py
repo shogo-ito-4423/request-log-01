@@ -27,7 +27,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
 
     application = FastAPI(
         title="Request Log — 業務改善リクエスト管理API",
-        description="改善要望の登録・一覧・詳細・部分更新を提供する1日版MVP。",
+        description="改善要望の登録・一覧・詳細・部分更新・削除を提供します。",
         version="0.1.0",
         lifespan=lifespan,
     )
@@ -89,6 +89,19 @@ def create_app(database_url: str | None = None) -> FastAPI:
         session.commit()
         session.refresh(issue)
         return issue
+
+    @application.delete(
+        "/issues/{issue_id}",
+        status_code=204,
+        response_class=Response,
+        tags=["issues"],
+        responses={404: {"description": "Issue not found"}},
+    )
+    def delete_issue(issue_id: IssueId, session: SessionDep) -> Response:
+        issue = find_issue(issue_id, session)
+        session.delete(issue)
+        session.commit()
+        return Response(status_code=204)
 
     return application
 

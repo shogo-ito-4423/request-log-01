@@ -57,7 +57,25 @@ def test_clear_assignee_and_update_content(client):
     assert updated.json()["assignee"] is None
 
 
-@pytest.mark.parametrize("method", ["get", "patch"])
+def test_delete_only_requested_issue(client):
+    kept = client.post("/issues", json={"title": "保持する要望"}).json()
+    target = client.post("/issues", json={"title": "誤登録した要望"}).json()
+    url = f"/issues/{target['id']}"
+
+    deleted = client.delete(url)
+    assert deleted.status_code == 204
+    assert deleted.content == b""
+
+    assert client.get(url).status_code == 404
+    assert client.get(f"/issues/{kept['id']}").json() == kept
+    assert client.get("/issues").json() == [kept]
+
+    repeated = client.delete(url)
+    assert repeated.status_code == 404
+    assert repeated.json() == {"detail": "Issue not found"}
+
+
+@pytest.mark.parametrize("method", ["get", "patch", "delete"])
 def test_missing_issue_returns_404(client, method):
     kwargs = {"json": {"status": "done"}} if method == "patch" else {}
     response = getattr(client, method)("/issues/999", **kwargs)

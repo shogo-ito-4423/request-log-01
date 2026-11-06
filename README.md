@@ -41,6 +41,7 @@ APIはテーブルを自動作成しません。スキーマはAlembicで管理�
 | GET | `/issues?limit=50&offset=0` | 200 | ID昇順の一覧（最大100件）。任意の `status` で絞り込み可能 |
 | GET | `/issues/{id}` | 200 | 詳細を取得 |
 | PATCH | `/issues/{id}` | 200 | 指定したフィールドだけ更新 |
+| DELETE | `/issues/{id}` | 204 | 指定した要望を物理削除（本文は空） |
 
 | フィールド | ルール | 作成時の初期値 |
 |---|---|---|
@@ -77,6 +78,10 @@ curl http://localhost:8000/issues/1
 curl -X PATCH http://localhost:8000/issues/1 \
   -H 'Content-Type: application/json' \
   -d '{"status":"in_progress","assignee":"担当A"}'
+
+# 上で登録したデモ用の要望を削除。成功時は204で本文は空
+curl -i -X DELETE http://localhost:8000/issues/1
+# 同じIDを再度削除すると404と {"detail":"Issue not found"} が返る
 
 # 異常系: 空白だけのタイトルは422
 curl -i -X POST http://localhost:8000/issues \

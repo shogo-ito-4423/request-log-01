@@ -1,6 +1,6 @@
 # B5：PostgreSQLの全CRUD・マイグレーション検証をCIへ組み込む
 
-対象はM2。依存するB3（Issue #14）・B4（Issue #17）は完了。見積もりは60〜90分（CI待ち時間や理解度確認によって継続する）。GitHub未起票。
+対象はM2。[GitHub Issue #19](https://github.com/shogo-ito-4423/request-log-01/issues/19)。依存するB3（Issue #14）・B4（Issue #17）は完了。見積もりは60〜90分（CI待ち時間や理解度確認によって継続する）。
 
 ## 背景・解決する問題
 

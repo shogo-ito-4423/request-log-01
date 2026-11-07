@@ -8,6 +8,23 @@ permissions:
   contents: read
 
 jobs:
+  postgresql:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Build integration test container
+        run: docker compose -f compose.integration.yaml build test
+      - name: PostgreSQL migration and CRUD tests
+        run: docker compose -f compose.integration.yaml run --rm test
+      - name: Logs
+        if: failure()
+        run: docker compose -f compose.integration.yaml logs
+      - name: Clean up CI containers and disposable data
+        if: always()
+        run: docker compose -f compose.integration.yaml down --volumes
   test:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

@@ -162,3 +162,9 @@ B4の復習では本人がdelete・flush・commitの役割を区別でき、前�
 ### B5コミット・振り返りと外部起票
 
 実装を `codex/b5-postgresql-ci` に `4c17ff4` としてコミット済み。振り返りはA ○、B ○（追加確認後）、C ○（補足・追加確認後）で完了。回答と補足は学習記録を参照。利用者のマージ・完了依頼に基づき、[Issue #19](https://github.com/shogo-ito-4423/request-log-01/issues/19)を作成しB5と対応付けた。次はPush・PR・CI成功確認・マージ。M2全体の達成判定は総合レビューで行う。
+
+### B5マージ完了（2026-11-07）
+
+[PR #20](https://github.com/shogo-ito-4423/request-log-01/pull/20)を `41de7b0` でマージし、Issue #19はClosed。最新PRコミット `61a6183` の[PR CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42331690150)と[Push CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42331676629)でpostgresql・test両ジョブの成功を確認してからマージした。ローカルmainも同期済み。
+
+B5のローカル検証・実CI・履歴・振り返りの完了条件を達成。クラウドデプロイは未実施。今回の検証用コンテナ・ネットワークは停止・削除済み、ボリューム2個は保持。実績時間は未計測。次はM2総合レビューで条件ごとの証跡と説明力を確認し、M3/M4を再見積もりする。当初期限は維持し、M2全体の完了はまだ判定していない。

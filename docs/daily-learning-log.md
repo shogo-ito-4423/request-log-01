@@ -163,3 +163,7 @@ Codexの補足：SQLAlchemyのSessionは取得済みのIssueオブジェクト�
 Codexの補足：観点ごとに必ずサービスを分けるのではなく、データや操作が干渉する試験を分離し、開始状態をそろえる。今回はdowngradeの影響を避けるため別DBを使用した。本人の質問に応じ、移行テストの構造照合・CHECK制約・API動作・再適用・往復検証をコードに沿って説明した。今回の移行は空DBからrevision 0001へのスキーマ変更であり、SQLiteからPostgreSQLへのデータ移送ではない。SQLiteは手軽な起動・既存API試験、PostgreSQLは実運用を想定した接続・CRUD・移行検証に使い、同時に二重保存していないことを説明した。これら追加説明後の本人の理解は未確認。
 
 振り返り完了。次回はスキーマ移行とデータ移送の違いを短く復習し、M2総合レビューへ進む。利用者からB5のマージ・完了依頼を受け、外部起票・Push・PR・CI確認・マージを進める。
+
+### B5のマージ結果
+
+[Issue #19](https://github.com/shogo-ito-4423/request-log-01/issues/19)はClosed。[PR #20](https://github.com/shogo-ito-4423/request-log-01/pull/20)はpostgresql・test両ジョブのCI成功後に `41de7b0` でマージ済み。実装 `4c17ff4`、振り返り `61a6183`。上記の外部手続きの未完了事項は解消しB5は完了。次回はM2総合レビューと、スキーマ移行・データ移送の違いの短い復習。

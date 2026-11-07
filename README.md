@@ -99,6 +99,10 @@ Ruffの静的解析・整形チェックとpytestを順に実行します。
 テストごとに一時ディレクトリにSQLite DBを作るため、APIの保存データには触れません。
 アプリのカバレッジ下限は90%です。
 
+PostgreSQLの全CRUD・移行往復は、DBを分離した専用Compose構成で検証します。
+GitHub Actionsでも既存のSQLite検証と別ジョブで実行します。
+実行方法は[PostgreSQL統合テスト](docs/development.md#postgresql統合テストb5)を参照してください。
+
 主な検証対象は、作成→詳細→一覧→更新の一連の操作、404/422、更新失敗時のデータ保持、
 ページ分割、UTC日時、DB障害時の503、アプリ再生成後の永続化です。
 GitHub Actionsはpush/PRごとに同じコンテナで検証し、さらに実HTTP通信とAPIコンテナ再作成後のデータ保持を確認します。

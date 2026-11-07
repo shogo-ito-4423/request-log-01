@@ -86,7 +86,7 @@ docker compose -f compose.postgresql.yaml --profile test down
 
 既存スモークスクリプトは一覧の先頭100件にも登録レコードが含まれることを確認します。
 この手順は専用の少量データ環境向けです。100件を超える環境への対応は別課題です。
-PostgreSQLの全CRUD統合テストとCIへの組込みはB5で行います。
+PostgreSQLの全CRUD統合テストとCI構成は下記B5の手順を使用します。
 
 ## Alembicによるスキーマ管理（B3）
 
@@ -117,7 +117,41 @@ docker compose -p request-log-01-b3-check -f compose.postgresql.yaml --profile t
 
 終了後もボリュームを保持します。同じDBで再実行すると空DBチェックで停止するため、
 次回は新しい専用プロジェクト名を選びます。通常のテストコマンドでも、使い捨てSQLiteで
-同じ往復検証を実施します。PostgreSQL版のCI組込みはB5に残します。
+同じ往復検証を実施します。PostgreSQL版のCI構成は下記B5を参照してください。
+
+## PostgreSQL統合テスト（B5）
+
+`compose.integration.yaml` は移行用の `migration-db` とCRUD用の `crud-db` を
+独立したPostgreSQLサービス・名前付きボリュームで用意します。ホストへのポート公開はありません。
+移行試験はテーブルを削除するため、CRUD試験のDBと共有しません。CRUD用DBにもAlembicを適用します。
+両試験は開始時に空DBであることを要求し、既存テーブルがあれば変更前に失敗します。
+実データのあるDBをテスト用URLへ指定しないでください。
+
+以下のプロジェクト名とボリュームが未使用であることを確認してから実行します。
+再実行時は新しいプロジェクト名に置き換え、すべてのコマンドで同じ名前を指定します。
+イメージがない場合は取得前に承認を得ます。
+
+```sh
+docker compose -p request-log-01-b5-check -f compose.integration.yaml build test
+docker compose -p request-log-01-b5-check -f compose.integration.yaml up --pull never --detach --wait migration-db crud-db
+docker compose -p request-log-01-b5-check -f compose.integration.yaml run --rm --no-deps test
+# 失敗時のDBログ
+docker compose -p request-log-01-b5-check -f compose.integration.yaml logs
+# 終了時はボリュームを保持
+docker compose -p request-log-01-b5-check -f compose.integration.yaml down
+```
+
+移行用URLは `TEST_MIGRATION_DATABASE_URL`、CRUD用URLは `TEST_CRUD_DATABASE_URL` として
+Composeが設定します。CRUDだけを単独実行する場合は、新しい専用プロジェクトでDBを起動し、
+上のrunコマンド末尾に `pytest tests/test_postgresql.py --no-cov -p no:cacheprovider` を追加します。
+通常のSQLite検証ではPostgreSQL CRUD試験をスキップします。専用Composeでは実DBに接続して
+移行往復とCRUDの2件を実行します。部分的な統合試験ではカバレッジを計測せず、既存の全体検証で90%下限を維持します。
+
+Actionsは `postgresql` ジョブで同じ構成を実行し、既存の `test` ジョブでSQLite・単体テスト・
+Ruff・実HTTP・再作成後の永続化を検証します。統合試験のHTTP操作はTestClient経由であり、
+PostgreSQLのAPIコンテナ再作成や実HTTP通信の検証とは区別します。
+CIではそのジョブ専用の使い捨てボリュームを終了時に削除します。
+ローカルのボリュームは明示的な許可なしに削除しません。
 
 ## 既存DBの扱い
 

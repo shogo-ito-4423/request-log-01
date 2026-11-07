@@ -1,0 +1,41 @@
+name: request-log-01-integration
+
+services:
+  migration-db:
+    image: postgres:15@sha256:3e43515057e113ee741fca2f621f15300be34a6d4a8dfcf2e20651288c8272f3
+    environment: &database-environment
+      POSTGRES_USER: request_log
+      POSTGRES_PASSWORD: local_demo_only
+      POSTGRES_DB: request_log
+    healthcheck: &database-healthcheck
+      test: ["CMD-SHELL", "pg_isready -U request_log -d request_log"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - migration-data:/var/lib/postgresql/data
+  crud-db:
+    image: postgres:15@sha256:3e43515057e113ee741fca2f621f15300be34a6d4a8dfcf2e20651288c8272f3
+    environment: *database-environment
+    healthcheck: *database-healthcheck
+    volumes:
+      - crud-data:/var/lib/postgresql/data
+  test:
+    build:
+      context: .
+      target: test
+    environment:
+      TEST_MIGRATION_DATABASE_URL: postgresql+psycopg://request_log:local_demo_only@migration-db:5432/request_log
+      TEST_CRUD_DATABASE_URL: postgresql+psycopg://request_log:local_demo_only@crud-db:5432/request_log
+    depends_on:
+      migration-db:
+        condition: service_healthy
+      crud-db:
+        condition: service_healthy
+    tmpfs:
+      - /tmp
+    command: ["pytest", "tests/test_migrations.py", "tests/test_postgresql.py", "--no-cov", "-p", "no:cacheprovider"]
+
+volumes:
+  migration-data:
+  crud-data:

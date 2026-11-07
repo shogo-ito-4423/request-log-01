@@ -17,7 +17,7 @@ created_at、updated_atを持つ。1日版では担当者を文字列で扱い�
 
 | 判断 | 理由 | 制約と次の対応 |
 |---|---|---|
-| SQLite | 外部DBサーバー不要で永続化を実証できる | 多数の同時書き込みには不向き。次版でPostgreSQLを検証 |
+| SQLiteとPostgreSQL | SQLiteで手軽に動作確認し、PostgreSQLで実接続と全CRUD・移行を検証する | 既存SQLiteデータのPostgreSQLへの移送は別課題 |
 | 同期SQLAlchemy Session | 小規模APIで処理とトランザクションの境界が明確 | 非同期化は負荷測定後に判断 |
 | Alembicによる明示的な移行（B3） | 変更履歴を再現し、API起動時のDDL実行を分離する | 既存DBは構造照合とバックアップ後に履歴へ取り込む。データ移送は別課題 |
 | PATCH + exclude_unset | 未指定フィールドを意図せず消さない | nullと省略の意味をテストで固定 |
@@ -43,7 +43,11 @@ pytestでは一時ファイルのSQLiteを使い、HTTPレベルの契約と実D
 
 B3で初期revisionと空DBでの往復検証を追加。起動前に移行を適用し、pytestのSQLiteも
 Alembicで構築する。初期revisionは現行モデルのPython側default/onupdateをDBのDEFAULTや
-トリガーに置き換えない。PostgreSQLの全CRUD統合試験とCI組込みはB5で行う。
+トリガーに置き換えない。PostgreSQLの全CRUD統合試験とCI構成はB5で追加した。
+`compose.integration.yaml` の移行用DBとCRUD用DBは別サービス・別ボリュームとし、
+downgradeによるテーブル削除とテストデータの相互干渉を防ぐ。各試験は空DBを要求し、
+CRUD側も独立してAlembicを適用する。既存SQLiteの広いAPI契約テストを維持しつつ、
+PostgreSQLでは実ドライバ・型・制約・トランザクションを通した一連のCRUDを検証する。
 以下は初日段階の候補で、最新の順序は進捗台帳を参照する。
 
 1. PostgreSQLとAlembicを導入し、既存データを保持した移行手順を検証する。

@@ -2,6 +2,19 @@
 
 ## 2026-11-08：C1ローカル実装・検証
 
+### C1マージ結果
+
+実装 `b55d793` を[PR #23](https://github.com/shogo-ito-4423/request-log-01/pull/23)で
+マージ（`e4e923c`）。Issue #22はClosed、ローカルmainも同期済み。
+対象SHAの[PR CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42474874169)と
+[Push CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42474854027)で
+postgresql・test両ジョブの成功を確認した。C1の実装・検証・外部手続きは完了。
+公開は未実施。コミット後の確認はA ○、B ○、C ○（追加質問後）で完了。
+本人は認証と認可を区別し、経費精算で対象申請の承認者かを判断する応用例を説明した。
+回答とCodexの補足は学習記録へ分けて記載した。C1の振り返りまで完了。
+利用者の完了依頼によりマージ結果と振り返りを記録する。
+次の開発候補はC2。トークン失効や所有者の移行判断の理解度は個別には未確認。
+
 追記：利用者がコミット・Issue起票・Push・PR作成・CI成功後のMergeを承認。
 C1を[Issue #22](https://github.com/shogo-ito-4423/request-log-01/issues/22)に対応付け、
 `codex/c1-authentication` で外部手続きを進める。以下の未起票は開始時点の記録。

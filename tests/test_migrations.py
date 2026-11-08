@@ -7,7 +7,7 @@ from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from fastapi.testclient import TestClient
-from sqlalchemy import inspect
+from sqlalchemy import inspect, text
 from sqlalchemy.exc import IntegrityError
 
 from app.database import make_engine
@@ -24,8 +24,30 @@ def test_migration_round_trip(tmp_path):
     try:
         assert inspect(engine).get_table_names() == [], "Verification requires an empty database"
         # API startup must not silently create the schema.
-        with TestClient(create_app(url)):
+        with TestClient(create_app(url), headers={"Authorization": "Bearer test-alice"}):
             assert inspect(engine).get_table_names() == []
+
+        command.upgrade(config, "0001")
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    "INSERT INTO issues (title, description, status, priority, "
+                    "created_at, updated_at) "
+                    "VALUES ('legacy', '', 'open', 'medium', '2026-11-05', '2026-11-05')"
+                )
+            )
+        command.upgrade(config, "head")
+        with engine.connect() as connection:
+            assert connection.execute(text("SELECT title, owner_id FROM issues")).one() == (
+                "legacy",
+                None,
+            )
+        command.downgrade(config, "0001")
+        with engine.connect() as connection:
+            assert connection.execute(text("SELECT title FROM issues")).scalar_one() == "legacy"
+        command.upgrade(config, "head")
+        with engine.begin() as connection:
+            connection.execute(text("DELETE FROM issues"))
 
         for attempt in range(2):
             command.upgrade(config, "head")
@@ -33,7 +55,7 @@ def test_migration_round_trip(tmp_path):
                 context = MigrationContext.configure(
                     connection, opts={"compare_type": True, "compare_server_default": True}
                 )
-                assert context.get_current_revision() == "0001"
+                assert context.get_current_revision() == "0002"
                 assert compare_metadata(context, Base.metadata) == []
             inspector = inspect(engine)
             assert {c["name"] for c in inspector.get_check_constraints("issues")} == {
@@ -52,7 +74,9 @@ def test_migration_round_trip(tmp_path):
             for invalid in ({"title": " "}, {"status": "invalid"}, {"priority": "invalid"}):
                 with pytest.raises(IntegrityError), engine.begin() as connection:
                     connection.execute(Issue.__table__.insert().values(valid | invalid))
-            with TestClient(create_app(url)) as client:
+            with TestClient(
+                create_app(url), headers={"Authorization": "Bearer test-alice"}
+            ) as client:
                 response = client.post("/issues", json={"title": "移行後の保存"})
                 assert response.status_code == 201
                 saved = response.json()

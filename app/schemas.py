@@ -50,6 +50,7 @@ class IssueRead(IssueCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    owner_id: str | None
     created_at: datetime
     updated_at: datetime
 

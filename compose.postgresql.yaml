@@ -8,6 +8,8 @@ services:
     ports:
       - "127.0.0.1:${PORT:-18082}:8000"
     environment:
+      AUTH_USERS_JSON: ${AUTH_USERS_JSON:-}
+      API_TOKEN: ${API_TOKEN:-}
       DATABASE_URL: postgresql+psycopg://request_log:local_demo_only@db:5432/request_log
     depends_on:
       db:

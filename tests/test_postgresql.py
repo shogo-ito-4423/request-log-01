@@ -20,7 +20,7 @@ def test_postgresql_crud(migrate):
         engine.dispose()
     migrate(url)
 
-    with TestClient(create_app(url)) as client:
+    with TestClient(create_app(url), headers={"Authorization": "Bearer test-alice"}) as client:
         assert client.get("/health").status_code == 200
         assert client.get("/issues").json() == []
         response = client.post("/issues", json={"title": "保持する要望"})
@@ -32,6 +32,12 @@ def test_postgresql_crud(migrate):
         assert response.status_code == 201
         target = response.json()
         url = f"/issues/{target['id']}"
+        assert target["owner_id"] == "alice"
+        bob_headers = {"Authorization": "Bearer test-bob"}
+        assert client.get(url, headers=bob_headers).json() == target
+        assert client.patch(url, json={"title": "blocked"}, headers=bob_headers).status_code == 403
+        assert client.delete(url, headers=bob_headers).status_code == 403
+        assert client.get(url).json() == target
         assert response.headers["location"] == url
         assert target["title"] == "改善要望"
         assert target["status"] == "open"
@@ -66,7 +72,7 @@ def test_postgresql_crud(migrate):
             missing = getattr(client, method)(missing_url, **kwargs)
             assert missing.status_code == 404
             assert missing.json() == {"detail": "Issue not found"}
-        deleted = client.delete(url)
+        deleted = client.delete(url, headers={"Authorization": "Bearer test-manager"})
         assert deleted.status_code == 204
         assert deleted.content == b""
         for response in (client.get(url), client.delete(url)):

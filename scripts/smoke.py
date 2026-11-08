@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -13,7 +14,10 @@ def request(base_url, method, path, payload=None, expected=200):
         f"{base_url}{path}",
         data=body,
         method=method,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.environ['API_TOKEN']}",
+        },
     )
     try:
         response = urllib.request.urlopen(req, timeout=10)

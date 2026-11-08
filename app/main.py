@@ -7,6 +7,7 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.auth import UserDep, load_users, require_owner
 from app.database import get_session, make_engine
 from app.models import Issue, Status
 from app.schemas import IssueCreate, IssueRead, IssueUpdate
@@ -18,6 +19,7 @@ IssueId = Annotated[int, Path(gt=0)]
 def create_app(database_url: str | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
+        application.state.auth_users = load_users()
         engine = make_engine(database_url or os.getenv("DATABASE_URL", "sqlite:////data/issues.db"))
         application.state.engine = engine
         try:
@@ -41,8 +43,10 @@ def create_app(database_url: str | None = None) -> FastAPI:
         return {"status": "ok"}
 
     @application.post("/issues", response_model=IssueRead, status_code=201, tags=["issues"])
-    def create_issue(payload: IssueCreate, response: Response, session: SessionDep) -> Issue:
-        issue = Issue(**payload.model_dump())
+    def create_issue(
+        payload: IssueCreate, response: Response, session: SessionDep, user: UserDep
+    ) -> Issue:
+        issue = Issue(**payload.model_dump(), owner_id=user.user_id)
         session.add(issue)
         session.commit()
         session.refresh(issue)
@@ -52,6 +56,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
     @application.get("/issues", response_model=list[IssueRead], tags=["issues"])
     def list_issues(
         session: SessionDep,
+        user: UserDep,
         status: Status | None = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
         offset: Annotated[int, Query(ge=0)] = 0,
@@ -73,7 +78,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
         tags=["issues"],
         responses={404: {"description": "Issue not found"}},
     )
-    def get_issue(issue_id: IssueId, session: SessionDep) -> Issue:
+    def get_issue(issue_id: IssueId, session: SessionDep, user: UserDep) -> Issue:
         return find_issue(issue_id, session)
 
     @application.patch(
@@ -82,8 +87,11 @@ def create_app(database_url: str | None = None) -> FastAPI:
         tags=["issues"],
         responses={404: {"description": "Issue not found"}},
     )
-    def update_issue(issue_id: IssueId, payload: IssueUpdate, session: SessionDep) -> Issue:
+    def update_issue(
+        issue_id: IssueId, payload: IssueUpdate, session: SessionDep, user: UserDep
+    ) -> Issue:
         issue = find_issue(issue_id, session)
+        require_owner(user, issue.owner_id)
         for key, value in payload.model_dump(exclude_unset=True).items():
             setattr(issue, key, value)
         session.commit()
@@ -97,8 +105,9 @@ def create_app(database_url: str | None = None) -> FastAPI:
         tags=["issues"],
         responses={404: {"description": "Issue not found"}},
     )
-    def delete_issue(issue_id: IssueId, session: SessionDep) -> Response:
+    def delete_issue(issue_id: IssueId, session: SessionDep, user: UserDep) -> Response:
         issue = find_issue(issue_id, session)
+        require_owner(user, issue.owner_id)
         session.delete(issue)
         session.commit()
         return Response(status_code=204)

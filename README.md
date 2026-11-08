@@ -16,6 +16,8 @@ Pythonやライブラリをホストにインストールする必要はあり�
 ```sh
 git clone https://github.com/shogo-ito-4423/request-log-01.git
 cd request-log-01
+# 初回のみ。既存の.envは上書きしない。ローカル専用の利用者別トークンを生成する
+docker run --pull=never --rm --network none -v "$PWD:/work" -w /work python:3.12-slim python scripts/create_local_auth.py
 docker compose build api
 docker compose run --rm --no-deps api alembic upgrade head
 docker compose up --detach --wait api
@@ -24,6 +26,12 @@ docker compose up --detach --wait api
 - API操作画面（Swagger UI）: <http://localhost:8000/docs>
 - OpenAPI仕様: <http://localhost:8000/openapi.json>
 - ヘルスチェック: <http://localhost:8000/health>
+
+`/issues` の全操作に認証が必要です。Swagger UIのAuthorizeへ `.env` の
+`API_TOKEN`（alice）、`BOB_TOKEN`（bob）、`ADMIN_TOKEN`（manager）の値を入力します。
+一般利用者は全件閲覧・自分の要望の登録／更新／削除、管理担当者は全件操作できます。
+`owner_id` は認証情報から決まり、入力・変更できません。既存の所有者未設定の要望は
+管理担当者だけが変更できます。設定・失効・公開時の制約は[認証運用](docs/authentication.md)を参照。
 
 8000番が使用中の場合は `PORT=18000 docker compose up --build --detach --wait api` を実行し、URLのポートを18000に変更します。
 初回ビルドはDocker HubとPyPIへの接続が必要です。Swagger UIも外部CDNを利用します。
@@ -62,6 +70,8 @@ PATCHは最低1フィールドが必要で、省略フィールドを保持し�
 
 以下はデータが空の場合の例です。登録結果の `id` を後続のURLに指定してください。
 curlを利用できる環境、または上記Swagger UIで操作できます。
+以下の `/issues` 向けcurlには `-H 'Authorization: Bearer <本人のトークン>'` を加えます。
+トークンをコマンド履歴に残さないため、通常はSwagger UIを使用してください。
 
 ```sh
 curl -i http://localhost:8000/health

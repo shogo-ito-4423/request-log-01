@@ -177,10 +177,14 @@ def test_invalid_pagination(client, query):
 def test_data_survives_app_recreation(tmp_path, migrate):
     database_url = f"sqlite:///{tmp_path / 'persistent.db'}"
     migrate(database_url)
-    with TestClient(create_app(database_url)) as first:
+    with TestClient(
+        create_app(database_url), headers={"Authorization": "Bearer test-alice"}
+    ) as first:
         created = first.post("/issues", json={"title": "再起動後も保持"}).json()
         saved = first.patch(f"/issues/{created['id']}", json={"status": "done"}).json()
-    with TestClient(create_app(database_url)) as second:
+    with TestClient(
+        create_app(database_url), headers={"Authorization": "Bearer test-alice"}
+    ) as second:
         assert second.get(f"/issues/{saved['id']}").json() == saved
 
 
@@ -188,7 +192,7 @@ def test_environment_database_url(tmp_path, monkeypatch, migrate):
     database = tmp_path / "environment.db"
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{database}")
     migrate(f"sqlite:///{database}")
-    with TestClient(create_app()) as client:
+    with TestClient(create_app(), headers={"Authorization": "Bearer test-alice"}) as client:
         assert client.post("/issues", json={"title": "環境変数"}).status_code == 201
     assert database.exists()
 

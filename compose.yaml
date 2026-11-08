@@ -6,6 +6,8 @@ services:
     ports:
       - "127.0.0.1:${PORT:-8000}:8000"
     environment:
+      AUTH_USERS_JSON: ${AUTH_USERS_JSON:-}
+      API_TOKEN: ${API_TOKEN:-}
       DATABASE_URL: sqlite:////data/issues.db
     volumes:
       - issue-data:/data

@@ -1,5 +1,10 @@
 # 開発・公開手順
 
+C1以降、API起動前にREADMEのコンテナコマンドでローカル `.env` を作成する。
+既存ファイルがある場合は上書きせず、[認証運用](authentication.md)に従い設定を追加する。
+SQLite・PostgreSQL両方のComposeが同じ認証設定を読み込む。スモーク試験は `API_TOKEN` を使用。
+pytestはfixtureで専用の認証設定を用意するため、ローカルの実トークンを必要としない。
+
 ## コンテナでの開発
 
 ホストにはPython、pip、Ruff、pytest、GitHub CLIをインストールしない。

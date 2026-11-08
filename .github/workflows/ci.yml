@@ -36,6 +36,9 @@ jobs:
         run: docker compose --profile test build test
       - name: Ruff and pytest
         run: docker compose --profile test run --rm test
+      - name: Generate ephemeral smoke credentials
+        run: |
+          docker compose --profile test run --rm --no-deps test python -c 'import hashlib,json,secrets; t=secrets.token_urlsafe(32); print("API_TOKEN="+t); print("AUTH_USERS_JSON="+json.dumps([{"user_id":"ci-smoke","role":"user","token_sha256":hashlib.sha256(t.encode()).hexdigest()}]))' >> "$GITHUB_ENV"
       - name: Start API
         run: |
           docker compose build api

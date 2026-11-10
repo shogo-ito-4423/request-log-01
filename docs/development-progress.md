@@ -1,5 +1,16 @@
 # 業務改善リクエスト管理API：開発進捗
 
+## 2026-11-10：C2前半のマージ結果
+
+設計コミット `04768a3` を[PR #25](https://github.com/shogo-ito-4423/request-log-01/pull/25)で
+マージ（`9c850f8`）。対象SHAの[PR CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42831843480)と
+[Push CI](https://github.com/shogo-ito-4423/request-log-01/actions/runs/42831820315)でpostgresql・testとも成功。
+ローカルmainも同期した。C2前半の設計・文書検証・コミット・CI・マージは完了。
+利用者の明示承認後、C2前半を[Issue #27](https://github.com/shogo-ito-4423/request-log-01/issues/27)に対応付けた。
+完了記録はPR #26で反映する。コミット後のA・B・Cは未評価で、次は1問ずつ振り返る。
+実装候補はC2a。クラウド作成・実装・公開は未実施、C2全体の完了とは区別する。
+本節より下の未コミット・未マージは各時点の履歴。実績時間は未計測。
+
 ## 2026-11-10：C2前半の設計完成・コミット準備
 
 追記：利用者が公開可否の確認結果を受け、コミットと問題がなければマージまでを承認した。
